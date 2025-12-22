@@ -1,0 +1,99 @@
+[
+  {
+    "name": "DOMPurify.removed should contain one element",
+    "kind": "contains",
+    "payload": "<svg onload=alert(1)><filter><feGaussianBlur /></filter></svg>",
+    "config": null,
+    "expected": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "DOMPurify.removed should contain two elements",
+    "kind": "contains",
+    "payload": "1<script>alert(1)</script><svg onload=alert(1)><filter><feGaussianBlur /></filter></svg>",
+    "config": null,
+    "expected": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "DOMPurify.removed should be correct",
+    "kind": "equal",
+    "payload": "<img src=x onerror=\"alert(1)\">",
+    "config": null,
+    "expected": 1
+  },
+  {
+    "name": "DOMPurify.removed should be correct in SAFE_FOR_TEMPLATES mode",
+    "kind": "equal",
+    "payload": "<a>123{{456}}</a>",
+    "config": {
+      "WHOLE_DOCUMENT": true,
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": 1
+  },
+  {
+    "name": "DOMPurify.removed should be correct in SAFE_FOR_TEMPLATES mode",
+    "kind": "equal",
+    "payload": "<a>123{{456}}<b>456{{789}}</b></a>",
+    "config": {
+      "WHOLE_DOCUMENT": true,
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": 2
+  },
+  {
+    "name": "DOMPurify.removed should be correct in SAFE_FOR_TEMPLATES mode",
+    "kind": "equal",
+    "payload": "<img src=1 width=\"{{123}}\">",
+    "config": {
+      "WHOLE_DOCUMENT": true,
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": 1
+  },
+  {
+    "name": "DOMPurify.removed should be correct",
+    "kind": "equal",
+    "payload": "<option><iframe></select><b><script>alert(1)</script>",
+    "config": null,
+    "expected": 1
+  },
+  {
+    "name": "DOMPurify.removed should not contain elements if tags are permitted",
+    "kind": "equal",
+    "payload": "<a>123</a>",
+    "config": null,
+    "expected": 0
+  },
+  {
+    "name": "DOMPurify.removed should not contain elements if all tags and attrs are permitted",
+    "kind": "equal",
+    "payload": "<img src=x>",
+    "config": null,
+    "expected": 0
+  },
+  {
+    "name": "DOMPurify.removed should not contain elements for valid data in SAFE_FOR_TEMLATES mode",
+    "kind": "equal",
+    "payload": "1",
+    "config": {
+      "WHOLE_DOCUMENT": true,
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": 0
+  },
+  {
+    "name": "DOMPurify.removed should not contain elements for valid data",
+    "kind": "equal",
+    "payload": "1",
+    "config": {
+      "WHOLE_DOCUMENT": true
+    },
+    "expected": 0
+  }
+]

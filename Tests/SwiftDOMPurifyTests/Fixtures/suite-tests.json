@@ -1,0 +1,729 @@
+[
+  {
+    "name": "Config-Param tests: CUSTOM_ELEMENT_HANDLING",
+    "kind": "equal",
+    "payload": "<foo-bar baz=\"foobar\" forbidden=\"true\"></foo-bar><div is=\"foo-baz\"></div>",
+    "config": {
+      "CUSTOM_ELEMENT_HANDLING": {
+        "tagNameCheck": {
+          "__type": "RegExp",
+          "source": "^foo-",
+          "flags": ""
+        },
+        "attributeNameCheck": {
+          "__type": "RegExp",
+          "source": "baz",
+          "flags": ""
+        },
+        "allowCustomizedBuiltInElements": true
+      }
+    },
+    "expected": "<foo-bar baz=\"foobar\"></foo-bar><div is=\"foo-baz\"></div>"
+  },
+  {
+    "name": "Config-Param tests: CUSTOM_ELEMENT_HANDLING",
+    "kind": "equal",
+    "payload": "<foo-bar baz=\"foobar\" forbidden=\"true\"></foo-bar><div is=\"foo-baz\"></div>",
+    "config": {
+      "CUSTOM_ELEMENT_HANDLING": {
+        "tagNameCheck": {
+          "__type": "RegExp",
+          "source": "^foo-",
+          "flags": ""
+        },
+        "attributeNameCheck": {
+          "__type": "RegExp",
+          "source": "baz",
+          "flags": ""
+        },
+        "allowCustomizedBuiltInElements": false
+      }
+    },
+    "expected": "<foo-bar baz=\"foobar\"></foo-bar><div is=\"\"></div>"
+  },
+  {
+    "name": "Config-Param tests: CUSTOM_ELEMENT_HANDLING",
+    "kind": "equal",
+    "payload": "<foo-bar baz=\"foobar\" forbidden=\"true\"></foo-bar><div is=\"foo-baz\"></div>",
+    "config": {
+      "CUSTOM_ELEMENT_HANDLING": {
+        "tagNameCheck": {
+          "__type": "RegExp",
+          "source": "-bar$",
+          "flags": ""
+        },
+        "attributeNameCheck": {
+          "__type": "RegExp",
+          "source": ".+",
+          "flags": ""
+        },
+        "allowCustomizedBuiltInElements": true
+      }
+    },
+    "expected": "<foo-bar baz=\"foobar\" forbidden=\"true\"></foo-bar><div is=\"\"></div>"
+  },
+  {
+    "name": "Config-Param tests: CUSTOM_ELEMENT_HANDLING",
+    "kind": "equal",
+    "payload": "<my-paragraph><span slot=\"my-text\">test</span></my-paragraph>",
+    "config": {
+      "CUSTOM_ELEMENT_HANDLING": {
+        "tagNameCheck": {
+          "__type": "RegExp",
+          "source": "-",
+          "flags": "u"
+        }
+      }
+    },
+    "expected": "<my-paragraph><span slot=\"my-text\">test</span></my-paragraph>"
+  },
+  {
+    "name": "Test dirty being an array",
+    "kind": "equal",
+    "payload": [
+      "<a>123<b>456</b></a>"
+    ],
+    "config": null,
+    "expected": "<a>123<b>456</b></a>"
+  },
+  {
+    "name": "Test dirty being an array",
+    "kind": "equal",
+    "payload": [
+      "<img src=",
+      "x onerror=alert(1)>"
+    ],
+    "config": null,
+    "expected": "<img src=\",x\">"
+  },
+  {
+    "name": "sanitize() should allow unknown protocols when ALLOW_UNKNOWN_PROTOCOLS is true",
+    "kind": "equal",
+    "payload": "<div><a href=\"spotify:track:12345\"><img src=\"cid:1234567\"></a></div>",
+    "config": {
+      "ALLOW_UNKNOWN_PROTOCOLS": true
+    },
+    "expected": "<div><a href=\"spotify:track:12345\"><img src=\"cid:1234567\"></a></div>"
+  },
+  {
+    "name": "sanitize() should not allow javascript when ALLOW_UNKNOWN_PROTOCOLS is true",
+    "kind": "equal",
+    "payload": "<div><a href=\"javascript:alert(document.title)\"><img src=\"cid:1234567\"/></a></div>",
+    "config": {
+      "ALLOW_UNKNOWN_PROTOCOLS": true
+    },
+    "expected": "<div><a><img src=\"cid:1234567\"></a></div>"
+  },
+  {
+    "name": "Regression-Test to make sure #166 stays fixed",
+    "kind": "equal",
+    "payload": "<p onFoo=\"123\">HELLO</p>",
+    "config": {
+      "ALLOW_UNKNOWN_PROTOCOLS": true
+    },
+    "expected": "<p>HELLO</p>"
+  },
+  {
+    "name": "DOMPurify should allow to define URI safe attributes",
+    "kind": "equal",
+    "payload": "<b typeof=\"bla:h\">123</b>",
+    "config": {
+      "ALLOWED_ATTR": [
+        "typeof"
+      ],
+      "ADD_URI_SAFE_ATTR": [
+        "typeof"
+      ]
+    },
+    "expected": "<b typeof=\"bla:h\">123</b>"
+  },
+  {
+    "name": "DOMPurify should not persist URI safe attributes",
+    "kind": "equal",
+    "payload": "<b typeof=\"bla:h\">123</b>",
+    "config": {
+      "ALLOWED_ATTR": [
+        "typeof"
+      ]
+    },
+    "expected": "<b>123</b>"
+  },
+  {
+    "name": "DOMPurify should not overwrite default URI safe attributes",
+    "kind": "contains",
+    "payload": "<div poster=\"x:y\" style=\"color: red\">Test</div>",
+    "config": {
+      "ADD_URI_SAFE_ATTR": [
+        "poster"
+      ]
+    },
+    "expected": [
+      "<div poster=\"x:y\" style=\"color: red\">Test</div>",
+      "<div poster=\"x:y\" style=\"color: red;\">Test</div>"
+    ]
+  },
+  {
+    "name": "DOMPurify should not overwrite default URI safe attributes",
+    "kind": "contains",
+    "payload": "<div poster=\"x:y\" style=\"color: red\">Test</div>",
+    "config": null,
+    "expected": [
+      "<div style=\"color: red\">Test</div>",
+      "<div style=\"color: red;\">Test</div>"
+    ]
+  },
+  {
+    "name": "FORCE_BODY needs to push some elements to document.body",
+    "kind": "equal",
+    "payload": "<style>123</style>",
+    "config": {
+      "FORCE_BODY": true
+    },
+    "expected": "<style>123</style>"
+  },
+  {
+    "name": "FORCE_BODY needs to push some elements to document.body",
+    "kind": "equal",
+    "payload": "<script>123</script>",
+    "config": {
+      "FORCE_BODY": true,
+      "ADD_TAGS": [
+        "script"
+      ]
+    },
+    "expected": "<script>123</script>"
+  },
+  {
+    "name": "FORCE_BODY needs to push some elements to document.body",
+    "kind": "equal",
+    "payload": " AAAAA",
+    "config": {
+      "FORCE_BODY": true
+    },
+    "expected": " AAAAA"
+  },
+  {
+    "name": "Lack of FORCE_BODY still preserves leading whitespace",
+    "kind": "equal",
+    "payload": " <b>AAAAA</b>",
+    "config": {
+      "FORCE_BODY": false
+    },
+    "expected": " <b>AAAAA</b>"
+  },
+  {
+    "name": "Lack of FORCE_BODY needs to push some elements to document.head",
+    "kind": "equal",
+    "payload": "<style>123</style>",
+    "config": {
+      "FORCE_BODY": false
+    },
+    "expected": ""
+  },
+  {
+    "name": "Ensure ALLOWED_URI_REGEXP is not cached",
+    "kind": "equal",
+    "payload": "<img src=\"https://different.com\">",
+    "config": null,
+    "expected": "<img src=\"https://different.com\">"
+  },
+  {
+    "name": "Ensure ALLOWED_URI_REGEXP is not cached",
+    "kind": "equal",
+    "payload": "<img src=\"https://test.com\">",
+    "config": {
+      "ALLOWED_URI_REGEXP": {
+        "__type": "RegExp",
+        "source": "test\\.com",
+        "flags": "i"
+      }
+    },
+    "expected": "<img src=\"https://test.com\">"
+  },
+  {
+    "name": "Ensure ALLOWED_URI_REGEXP is not cached",
+    "kind": "equal",
+    "payload": "<img src=\"https://different.com\">",
+    "config": null,
+    "expected": "<img src=\"https://different.com\">"
+  },
+  {
+    "name": "Avoid freeze when using tables and ALLOW_TAGS",
+    "kind": "equal",
+    "payload": "<table><tr><td></td></tr></table>",
+    "config": {
+      "ALLOW_TAGS": [
+        "table",
+        "tr",
+        "td"
+      ]
+    },
+    "expected": "<table><tbody><tr><td></td></tr></tbody></table>"
+  },
+  {
+    "name": "Avoid XSS with ALLOW_TAGS permitting noembed, noscript",
+    "kind": "contains",
+    "payload": "a<noembed><p id='</noembed><img src=x onerror=alert(1)>'></p></noembed>",
+    "config": {
+      "ADD_TAGS": [
+        "noembed"
+      ]
+    },
+    "expected": [
+      "a<noembed><p id='</noembed><img src=\"x\">'&gt;<p></p>",
+      "a",
+      "a<noembed>&lt;p id='</noembed><img src=\"x\">'&gt;<p></p>",
+      "a<noembed><p id=\"&lt;/noembed&gt;&lt;img src=x onerror=alert(1)&gt;\"></p></noembed>",
+      "a<noembed></noembed>",
+      "a<img src=\"x\">'&gt;<p></p>"
+    ]
+  },
+  {
+    "name": "Avoid mXSS in Chrome 77 and above using SVG",
+    "kind": "contains",
+    "payload": "<svg></p><style><g title=\"</style>",
+    "config": null,
+    "expected": [
+      "",
+      "<svg></svg><p></p><style><g title=\"</style>",
+      "<p></p><style><g title=\"</style>",
+      "<svg></svg><p></p>",
+      "<svg><style></style></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\"><style /></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\"><style /></svg></svg>"
+    ]
+  },
+  {
+    "name": "Avoid mXSS in Chrome 77 and above using HTML",
+    "kind": "contains",
+    "payload": "<svg></p><title><a href=\"</title>qqq",
+    "config": null,
+    "expected": [
+      "",
+      "<svg></svg><p></p><title>&lt;a href=\"</title>qqq<img src=\"\">\"&gt;",
+      "<svg></svg><p></p><title>&lt;a href=\"</title>qqq",
+      "<p></p><title>&lt;a href=\"</title>qqq",
+      "<svg></svg><p></p>qqq",
+      "<svg><title></title></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\"><title /></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\"><title /></svg></svg>"
+    ]
+  },
+  {
+    "name": "Test for DoS coming from table sanitization 1/2 See #365",
+    "kind": "equal",
+    "payload": "<table><tbody><tr><td>test</td></tr></tbody></table>",
+    "config": {
+      "FORBID_TAGS": [
+        "tbody"
+      ]
+    },
+    "expected": "<table><tbody><tr><td>test</td></tr></tbody></table>"
+  },
+  {
+    "name": "Test for DoS coming from table sanitization 2/2 See #365",
+    "kind": "equal",
+    "payload": "<table><colgroup><col></col></colgroup><tbody><tr><td >test</td></tr></tbody></table>",
+    "config": {
+      "ALLOWED_TAGS": [
+        "b",
+        "strong",
+        "i",
+        "italic",
+        "div",
+        "p",
+        "span",
+        "ul",
+        "li",
+        "ol",
+        "a",
+        "img",
+        "br",
+        "tr",
+        "td",
+        "th",
+        "table",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6"
+      ],
+      "ALLOW_DATA_ATTR": false,
+      "ALLOWED_ATTR": [
+        "src",
+        "class",
+        "target",
+        "href"
+      ]
+    },
+    "expected": "<table><tbody><tr><td>test</td></tr></tbody></table>"
+  },
+  {
+    "name": "Test for less aggressive mXSS handling, See #369",
+    "kind": "contains",
+    "payload": "<b data-test=\"<span>content</span>\"></b>",
+    "config": {
+      "FORBID_TAGS": [
+        "svg",
+        "math"
+      ]
+    },
+    "expected": [
+      "<b data-test=\"<span>content</span>\"></b>",
+      "<b data-test=\"&lt;span&gt;content&lt;/span&gt;\"></b>"
+    ]
+  },
+  {
+    "name": "Test against mXSS using text integration points and removal 1/2",
+    "kind": "contains",
+    "payload": "<math><mi><b><style><b title=\"</style><iframe onload&#x3d;alert(1)<!--\"></style>",
+    "config": {
+      "FORBID_TAGS": [
+        "mi"
+      ]
+    },
+    "expected": [
+      "<math><b><style><b title=\"</style></b></math>",
+      "<math></math>",
+      ""
+    ]
+  },
+  {
+    "name": "Test against mXSS using text integration points and removal 2/2",
+    "kind": "contains",
+    "payload": "x<noframes><svg><b><xmp><b title='</xmp><img>",
+    "config": {
+      "ADD_TAGS": [
+        "xmp"
+      ]
+    },
+    "expected": [
+      "x"
+    ]
+  },
+  {
+    "name": "Test against insecure behavior in jQUery v3.0 and newer 1/2",
+    "kind": "contains",
+    "payload": "<img x=\"/><img src=x onerror=alert(1)>\" y=\"<x\">",
+    "config": {},
+    "expected": [
+      "<img x=\"/><img src=x onerror=alert(1)>\" y=\"<x\">",
+      "<img y=\"<x\">",
+      "<img y=\"&lt;x\">",
+      "<img y=\"<x\">",
+      "<img x=\"/&gt;&lt;img src=x onerror=alert(1)&gt;\" y=\"&lt;x\">"
+    ]
+  },
+  {
+    "name": "Test against insecure behavior in jQUery v3.0 and newer 2/2",
+    "kind": "contains",
+    "payload": "a<noscript><p id='><noscript /><img src=x onerror=alert(1)>'></noscript>",
+    "config": {},
+    "expected": [
+      "a<noscript>&lt;p id='>&lt;noscript />&lt;img src=x onerror=alert(1)>'></noscript>",
+      "a<noscript><p></p></noscript>",
+      "a<p></p>",
+      "a"
+    ]
+  },
+  {
+    "name": "Test against data URIs in anchors without proper config flag",
+    "kind": "equal",
+    "payload": "<a href=\"data:image/gif;base64,123\">icon.gif</a>",
+    "config": null,
+    "expected": "<a>icon.gif</a>"
+  },
+  {
+    "name": "Test against data URIs in anchors using proper config flag",
+    "kind": "equal",
+    "payload": "<a href=\"data:image/gif;base64,123\">icon.gif</a>",
+    "config": {
+      "ADD_DATA_URI_TAGS": [
+        "a",
+        "b"
+      ]
+    },
+    "expected": "<a href=\"data:image/gif;base64,123\">icon.gif</a>"
+  },
+  {
+    "name": "Test against Unicode tag names and proper removal",
+    "kind": "contains",
+    "payload": "<svg><blocKquote>foo</blocKquote>",
+    "config": null,
+    "expected": [
+      "<svg></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" />"
+    ]
+  },
+  {
+    "name": "Test against Unicode tag names and proper removal",
+    "kind": "contains",
+    "payload": "<svg><blocKquote>foo</blocKquote>",
+    "config": null,
+    "expected": [
+      "<svg></svg><blockquote>foo</blockquote>",
+      "<svg><blockquote>foo</blockquote></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" /><blockquote>foo</blockquote>"
+    ]
+  },
+  {
+    "name": "Test if namespaces are properly enforced",
+    "kind": "contains",
+    "payload": "<svg><desc><canvas></canvas><textarea></textarea></desc></svg>",
+    "config": null,
+    "expected": [
+      "<svg><desc></desc></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\"><desc></desc></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" />"
+    ]
+  },
+  {
+    "name": "Test if namespaces are properly enforced",
+    "kind": "contains",
+    "payload": "<svg><canvas></canvas><textarea></textarea></svg>",
+    "config": null,
+    "expected": [
+      "<svg></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" />"
+    ]
+  },
+  {
+    "name": "Test if namespaces are properly enforced",
+    "kind": "contains",
+    "payload": "<math><canvas></canvas><textarea></textarea></math>",
+    "config": null,
+    "expected": [
+      "<math></math>"
+    ]
+  },
+  {
+    "name": "Test if namespaces are properly enforced",
+    "kind": "contains",
+    "payload": "<math><mi><canvas></canvas><textarea></textarea></mi></math>",
+    "config": null,
+    "expected": [
+      "<math><mi><canvas></canvas><textarea></textarea></mi></math>",
+      "<math></math>"
+    ]
+  },
+  {
+    "name": "Test if namespaces are properly enforced",
+    "kind": "contains",
+    "payload": "<svg><math></math><title><math></math></title></svg>",
+    "config": null,
+    "expected": [
+      "<svg><title></title></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" />",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\"><title></title></svg>"
+    ]
+  },
+  {
+    "name": "Test if namespaces are properly enforced",
+    "kind": "contains",
+    "payload": "<math><svg></svg><mi><svg></svg></mi></math>",
+    "config": null,
+    "expected": [
+      "<math><mi><svg></svg></mi></math>",
+      "<math><mi><svg xmlns=\"http://www.w3.org/2000/svg\" /></mi></math>",
+      "<math></math>"
+    ]
+  },
+  {
+    "name": "Test if namespaces are properly enforced",
+    "kind": "contains",
+    "payload": "<form><math><mi><mglyph></form><form>",
+    "config": null,
+    "expected": [
+      "<form><math><mi><mglyph></mglyph></mi></math></form>",
+      "<form><math></math></form>"
+    ]
+  },
+  {
+    "name": "Test invalid xml",
+    "kind": "contains",
+    "payload": "",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/2000/svg"
+    },
+    "expected": [
+      ""
+    ]
+  },
+  {
+    "name": "Test invalid xml",
+    "kind": "contains",
+    "payload": "<!-->",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/2000/svg"
+    },
+    "expected": [
+      "",
+      "<!-->"
+    ]
+  },
+  {
+    "name": "Test invalid xml",
+    "kind": "contains",
+    "payload": "",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/1998/Math/MathML"
+    },
+    "expected": [
+      ""
+    ]
+  },
+  {
+    "name": "Test invalid xml",
+    "kind": "contains",
+    "payload": "<!-->",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/1998/Math/MathML"
+    },
+    "expected": [
+      "",
+      "<!-->"
+    ]
+  },
+  {
+    "name": "Test invalid xml",
+    "kind": "contains",
+    "payload": "",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/1999/xhtml"
+    },
+    "expected": [
+      ""
+    ]
+  },
+  {
+    "name": "Test invalid xml",
+    "kind": "contains",
+    "payload": "",
+    "config": {},
+    "expected": [
+      ""
+    ]
+  },
+  {
+    "name": "Test invalid xml",
+    "kind": "contains",
+    "payload": "<!-->",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/1999/xhtml"
+    },
+    "expected": [
+      "",
+      "<!-->"
+    ]
+  },
+  {
+    "name": "Test invalid xml",
+    "kind": "contains",
+    "payload": "<!-->",
+    "config": {},
+    "expected": [
+      "",
+      "<!-->"
+    ]
+  },
+  {
+    "name": "Test namespace default to html after other namespace been used",
+    "kind": "contains",
+    "payload": "<br>",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/2000/svg"
+    },
+    "expected": [
+      "",
+      "<br>"
+    ]
+  },
+  {
+    "name": "Test namespace default to html after other namespace been used",
+    "kind": "contains",
+    "payload": "<br>",
+    "config": {},
+    "expected": [
+      "<br>"
+    ]
+  },
+  {
+    "name": "Test non-html input after empty input",
+    "kind": "contains",
+    "payload": "",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/2000/svg"
+    },
+    "expected": [
+      ""
+    ]
+  },
+  {
+    "name": "Test non-html input after empty input",
+    "kind": "contains",
+    "payload": "<polyline points=\"0 0\"></polyline>",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/2000/svg"
+    },
+    "expected": [
+      "<polyline points=\"0 0\"></polyline>",
+      "<polyline xmlns=\"http://www.w3.org/2000/svg\" points=\"0 0\"/>",
+      "<polyline xmlns=\"http://www.w3.org/2000/svg\" points=\"0,0\" />",
+      ""
+    ]
+  },
+  {
+    "name": "Test proper removal of annotation-xml w. custom elements",
+    "kind": "contains",
+    "payload": "<svg><annotation-xml><foreignobject><style><!--</style><p id=\"--><img src='x' onerror='alert(1)'>\">",
+    "config": {
+      "CUSTOM_ELEMENT_HANDLING": {
+        "tagNameCheck": {
+          "__type": "RegExp",
+          "source": ".*",
+          "flags": ""
+        }
+      },
+      "FORBID_CONTENTS": [
+        ""
+      ]
+    },
+    "expected": "<svg></svg>"
+  },
+  {
+    "name": "Test proper handling of attributes with RETURN_DOM",
+    "kind": "contains",
+    "payload": "<body onload=\"alert(1)\">&lt;a<!-- <f --></body>",
+    "config": {
+      "RETURN_DOM": true
+    },
+    "expected": "<body>&lt;a</body>"
+  },
+  {
+    "name": "Test proper handling of data-attribiutes in XML modes",
+    "kind": "contains",
+    "payload": "<svg width=\"800\" height=\"600\" xmlns=\"http://www.w3.org/2000/svg\"><a xmlns:data-slonser=\"http://www.w3.org/1999/xlink\" data-slonser:href=\"javascript:alert(1)\"><text  x=\"20\" y=\"35\">Click me!</text></a></svg>",
+    "config": {
+      "PARSER_MEDIA_TYPE": "application/xhtml+xml"
+    },
+    "expected": [
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"600\"><a><text x=\"20\" y=\"35\">Click me!</text></a></svg>",
+      "<svg width=\"800\" height=\"600\" xmlns=\"http://www.w3.org/2000/svg\"><a><text x=\"20\" y=\"35\">Click me!</text></a></svg>"
+    ]
+  },
+  {
+    "name": "Expect the same results when using ALLOWED_URI_REGEXP with the g flag",
+    "kind": "equal",
+    "payload": "<img src=\"blob:http://localhost:5173/84c49be9-3352-4407-b066-7b5b4d46c52a\"><a epub:type=\"noteref\" href=\"epub:EPUB/xhtml/#footnote\"></a><img src=\"blob:http://localhost:5173/84c49be9-3352-4407\" >",
+    "config": {
+      "ALLOWED_URI_REGEXP": {
+        "__type": "RegExp",
+        "source": "^(blob|https|epub|filepos|kindle)",
+        "flags": "gi"
+      }
+    },
+    "expected": "<img src=\"blob:http://localhost:5173/84c49be9-3352-4407-b066-7b5b4d46c52a\"><a href=\"epub:EPUB/xhtml/#footnote\"></a><img src=\"blob:http://localhost:5173/84c49be9-3352-4407\">"
+  }
+]

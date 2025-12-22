@@ -1,0 +1,1509 @@
+[
+  {
+    "name": "Config-Flag tests: KEEP_CONTENT + ALLOWED_TAGS / ALLOWED_ATTR",
+    "kind": "equal",
+    "payload": "<iframe>Hello</iframe>",
+    "config": {
+      "KEEP_CONTENT": false
+    },
+    "expected": ""
+  },
+  {
+    "name": "Config-Flag tests: KEEP_CONTENT + ALLOWED_TAGS / ALLOWED_ATTR",
+    "kind": "contains",
+    "payload": "<a href=\"#\">abc<b style=\"color:red\">123</b><q class=\"cite\">123</b></a>",
+    "config": {
+      "ALLOWED_TAGS": [
+        "b",
+        "q"
+      ],
+      "ALLOWED_ATTR": [
+        "style"
+      ],
+      "KEEP_CONTENT": true
+    },
+    "expected": [
+      "abc<b style=\"color:red\">123</b><q>123</q>",
+      "abc<b style=\"color: red;\">123</b><q>123</q>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: KEEP_CONTENT + ALLOWED_TAGS / ALLOWED_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\">abc<b style=\"color:red\">123</b><q class=\"cite\">123</b></a>",
+    "config": {
+      "ALLOWED_TAGS": [
+        "b",
+        "q"
+      ],
+      "ALLOWED_ATTR": [
+        "style"
+      ],
+      "KEEP_CONTENT": false
+    },
+    "expected": ""
+  },
+  {
+    "name": "Config-Flag tests: KEEP_CONTENT + ALLOWED_TAGS / ALLOWED_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\">abc</a>",
+    "config": {
+      "ALLOWED_TAGS": [
+        "b",
+        "q"
+      ],
+      "KEEP_CONTENT": false
+    },
+    "expected": ""
+  },
+  {
+    "name": "Config-Flag tests: KEEP_CONTENT + ALLOWED_TAGS / ALLOWED_ATTR",
+    "kind": "equal",
+    "payload": "<form><input name=\"parentNode\"></form>",
+    "config": {
+      "ALLOWED_TAGS": [
+        "input"
+      ],
+      "KEEP_CONTENT": true
+    },
+    "expected": "<input>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_SELF_CLOSE_IN_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\" class=\"foo <br/>\">abc</a>",
+    "config": {
+      "ALLOW_SELF_CLOSE_IN_ATTR": false
+    },
+    "expected": "<a href=\"#\">abc</a>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_SELF_CLOSE_IN_ATTR",
+    "kind": "contains",
+    "payload": "<a href=\"#\" class=\"foo <br/>\">abc</a>",
+    "config": {
+      "ALLOW_SELF_CLOSE_IN_ATTR": true
+    },
+    "expected": [
+      "<a href=\"#\" class=\"foo <br/>\">abc</a>",
+      "<a href=\"#\" class=\"foo &lt;br/&gt;\">abc</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_DATA_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\" data-abc\"=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_DATA_ATTR": true
+    },
+    "expected": "<a href=\"#\">abc</a>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_DATA_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\" data-abc=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_DATA_ATTR": false
+    },
+    "expected": "<a href=\"#\">abc</a>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_DATA_ATTR",
+    "kind": "contains",
+    "payload": "<a href=\"#\" data-abc=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_DATA_ATTR": true
+    },
+    "expected": [
+      "<a data-abc=\"foo\" href=\"#\">abc</a>",
+      "<a href=\"#\" data-abc=\"foo\">abc</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_DATA_ATTR",
+    "kind": "contains",
+    "payload": "<a href=\"#\" data-abc-1-2-3=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_DATA_ATTR": true
+    },
+    "expected": [
+      "<a data-abc-1-2-3=\"foo\" href=\"#\">abc</a>",
+      "<a href=\"#\" data-abc-1-2-3=\"foo\">abc</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_DATA_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\" data-\"\"=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_DATA_ATTR": true
+    },
+    "expected": "<a href=\"#\">abc</a>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_DATA_ATTR",
+    "kind": "contains",
+    "payload": "<a href=\"#\" data-äöü=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_DATA_ATTR": true
+    },
+    "expected": [
+      "<a href=\"#\" data-äöü=\"foo\">abc</a>",
+      "<a data-äöü=\"foo\" href=\"#\">abc</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_DATA_ATTR",
+    "kind": "contains",
+    "payload": "<a href=\"#\" data-·._=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_DATA_ATTR": true
+    },
+    "expected": [
+      "<a data-·._=\"foo\" href=\"#\">abc</a>",
+      "<a href=\"#\">abc</a>",
+      "<a href=\"#\" data-·._=\"foo\">abc</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_DATA_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\" data-µ=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_DATA_ATTR": true
+    },
+    "expected": "<a href=\"#\">abc</a>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_DATA_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\" data-evil=\"foo\">abc</a>",
+    "config": {
+      "FORBID_ATTR": [
+        "data-evil"
+      ]
+    },
+    "expected": "<a href=\"#\">abc</a>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_DATA_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\" data-evil=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_DATA_ATTR": true,
+      "FORBID_ATTR": [
+        "data-evil"
+      ]
+    },
+    "expected": "<a href=\"#\">abc</a>"
+  },
+  {
+    "name": "Config-Flag tests: ADD_TAGS",
+    "kind": "equal",
+    "payload": "<my-component>abc</my-component>",
+    "config": {
+      "ADD_TAGS": [
+        "my-component"
+      ]
+    },
+    "expected": "<my-component>abc</my-component>"
+  },
+  {
+    "name": "Config-Flag tests: ADD_TAGS + ADD_ATTR",
+    "kind": "equal",
+    "payload": "<my-component my-attr=\"foo\">abc</my-component>",
+    "config": {
+      "ADD_TAGS": [
+        "my-component"
+      ]
+    },
+    "expected": "<my-component>abc</my-component>"
+  },
+  {
+    "name": "Config-Flag tests: ADD_TAGS + ADD_ATTR",
+    "kind": "equal",
+    "payload": "<my-component my-attr=\"foo\">abc</my-component>",
+    "config": {
+      "ADD_TAGS": [
+        "my-component"
+      ],
+      "ADD_ATTR": [
+        "my-attr"
+      ]
+    },
+    "expected": "<my-component my-attr=\"foo\">abc</my-component>"
+  },
+  {
+    "name": "Config-Flag tests: FORBID_CONTENTS + FORBID_TAGS",
+    "kind": "equal",
+    "payload": "<div><b>preserve me</b></div><p><b>no not preserve me</b></p>",
+    "config": {
+      "FORBID_CONTENTS": [
+        "p"
+      ],
+      "FORBID_TAGS": [
+        "div",
+        "p"
+      ]
+    },
+    "expected": "<b>preserve me</b>"
+  },
+  {
+    "name": "Config-Flag tests: FORBID_CONTENTS + ADD_FORBID_CONTENTS + FORBID_TAGS",
+    "kind": "equal",
+    "payload": "<div><b>preserve me</b></div><p><b>no not preserve me</b></p><a><i>also no preserve me</i></a>",
+    "config": {
+      "FORBID_CONTENTS": [
+        "p"
+      ],
+      "ADD_FORBID_CONTENTS": [
+        "a"
+      ],
+      "FORBID_TAGS": [
+        "div",
+        "p",
+        "a"
+      ]
+    },
+    "expected": "<b>preserve me</b>"
+  },
+  {
+    "name": "Config-Flag tests: DEFAULT_FORBID_CONTENTS + ADD_FORBID_CONTENTS",
+    "kind": "equal",
+    "payload": "<script>var a = 1;</script><p><b>no not preserve me</b></p><a><i>preserve me</i></a>",
+    "config": {
+      "ADD_FORBID_CONTENTS": [
+        "p"
+      ],
+      "FORBID_TAGS": [
+        "script",
+        "p",
+        "a"
+      ]
+    },
+    "expected": "<i>preserve me</i>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_JQUERY (now inactive, secure by default)",
+    "kind": "equal",
+    "payload": "<a>123</a><option><style><img src=x onerror=alert(1)>",
+    "config": null,
+    "expected": "<a>123</a><option></option>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_JQUERY (now inactive, secure by default)",
+    "kind": "equal",
+    "payload": "<a>123</a><option><style><img src=x onerror=alert(1)>",
+    "config": null,
+    "expected": "<a>123</a><option></option>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_JQUERY (now inactive, secure by default)",
+    "kind": "contains",
+    "payload": "<option><style></option></select><b><img src=xx: onerror=alert(1)></style></option>",
+    "config": null,
+    "expected": [
+      "<option></option>",
+      ""
+    ]
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_JQUERY (now inactive, secure by default)",
+    "kind": "contains",
+    "payload": "<option><iframe></select><b><script>alert(1)</script>",
+    "config": null,
+    "expected": [
+      "<option></option>",
+      ""
+    ]
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_JQUERY (now inactive, secure by default)",
+    "kind": "contains",
+    "payload": "<option><iframe></select><b><script>alert(1)</script>",
+    "config": null,
+    "expected": [
+      "<option></option>",
+      ""
+    ]
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_JQUERY (now inactive, secure by default)",
+    "kind": "equal",
+    "payload": "<b><style><style/><img src=xx: onerror=alert(1)>",
+    "config": null,
+    "expected": "<b></b>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_JQUERY (now inactive, secure by default)",
+    "kind": "equal",
+    "payload": "<b><style><style/><img src=xx: onerror=alert(1)>",
+    "config": null,
+    "expected": "<b></b>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_JQUERY (now inactive, secure by default)",
+    "kind": "contains",
+    "payload": "1<template><s>000</s></template>2",
+    "config": null,
+    "expected": [
+      "1<template><s>000</s></template>2",
+      "1<template></template>2",
+      "12"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_JQUERY (now inactive, secure by default)",
+    "kind": "contains",
+    "payload": "<template><s>000</s></template>",
+    "config": null,
+    "expected": [
+      "",
+      "<template><s>000</s></template>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_JQUERY (now inactive, secure by default)",
+    "kind": "equal",
+    "payload": "<i>&amp;amp; &lt;</i>",
+    "config": null,
+    "expected": "<i>&amp;amp; &lt;</i>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a>123{{456}}<b><style><% alert(1) %></style>456</b></a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": "<a> <b><style> </style>456</b></a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a data-bind=\"style: alert(1)\"></a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": "<a></a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a data-harmless=\"\"></a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true,
+      "ALLOW_DATA_ATTR": true
+    },
+    "expected": "<a></a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a data-harmless=\"\"></a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": false,
+      "ALLOW_DATA_ATTR": false
+    },
+    "expected": "<a></a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a>{{123}}{{456}}<b><style><% alert(1) %><% 123 %></style>456</b></a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": "<a> <b><style> </style>456</b></a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a>{{123}}abc{{456}}<b><style><% alert(1) %>def<% 123 %></style>456</b></a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": "<a> <b><style> </style>456</b></a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a>123{{45{{6}}<b><style><% alert(1)%> %></style>456</b></a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": "<a> <b><style> </style>456</b></a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a>123{{45}}6}}<b><style><% <%alert(1) %></style>456</b></a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": "<a> <b><style> </style>456</b></a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a>123{{<b>456}}</b><style><% alert(1) %></style>456</a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": "<a>123 <b> </b><style> </style>456</a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "contains",
+    "payload": "<b>{{evil<script>alert(1)</script><form><img src=x name=textContent></form>}}</b>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": [
+      "<b>  </b>",
+      "<b> </b>",
+      "<b> <form><img src=\"x\"></form> </b>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "contains",
+    "payload": "<b>he{{evil<script>alert(1)</script><form><img src=x name=textContent></form>}}ya</b>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": [
+      "<b>he  ya</b>",
+      "<b>he </b>",
+      "<b>he <form><img src=\"x\"></form> ya</b>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a>123<% <b>456}}</b><style>{{ alert(1) }}</style>456 %></a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": "<a>123 <b> </b><style> </style> </a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a href=\"}}javascript:alert(1)\"></a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": "<a></a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "<a class=\"{{999-333}}\"></a>",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": "<a class=\" \"></a>"
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "{{999-333}}",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": " "
+  },
+  {
+    "name": "Config-Flag tests: SAFE_FOR_TEMPLATES",
+    "kind": "equal",
+    "payload": "{<x>{333+333}<x>}",
+    "config": {
+      "SAFE_FOR_TEMPLATES": true
+    },
+    "expected": " "
+  },
+  {
+    "name": "Config-Flag tests: SANITIZE_DOM",
+    "kind": "equal",
+    "payload": "<img src=\"x\" name=\"implementation\">",
+    "config": {
+      "SANITIZE_DOM": true
+    },
+    "expected": "<img src=\"x\">"
+  },
+  {
+    "name": "Config-Flag tests: SANITIZE_DOM",
+    "kind": "equal",
+    "payload": "<img src=\"x\" name=\"createNodeIterator\">",
+    "config": {
+      "SANITIZE_DOM": true
+    },
+    "expected": "<img src=\"x\">"
+  },
+  {
+    "name": "Config-Flag tests: SANITIZE_DOM",
+    "kind": "equal",
+    "payload": "<img src=\"x\" name=\"getElementById\">",
+    "config": {
+      "SANITIZE_DOM": false
+    },
+    "expected": "<img src=\"x\" name=\"getElementById\">"
+  },
+  {
+    "name": "Config-Flag tests: SANITIZE_DOM",
+    "kind": "equal",
+    "payload": "<img src=\"x\" name=\"getElementById\">",
+    "config": {
+      "SANITIZE_DOM": true
+    },
+    "expected": "<img src=\"x\">"
+  },
+  {
+    "name": "Config-Flag tests: SANITIZE_DOM",
+    "kind": "equal",
+    "payload": "<a href=\"x\" id=\"location\">click</a>",
+    "config": {
+      "SANITIZE_DOM": true
+    },
+    "expected": "<a href=\"x\">click</a>"
+  },
+  {
+    "name": "Config-Flag tests: SANITIZE_DOM",
+    "kind": "contains",
+    "payload": "<form><input name=\"attributes\"></form>",
+    "config": {
+      "ADD_TAGS": [
+        "form"
+      ],
+      "SANITIZE_DOM": false
+    },
+    "expected": [
+      "",
+      "<form><input name=\"attributes\"></form>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: SANITIZE_DOM",
+    "kind": "contains",
+    "payload": "<form><input name=\"attributes\"></form>",
+    "config": {
+      "ADD_TAGS": [
+        "form"
+      ],
+      "SANITIZE_DOM": true
+    },
+    "expected": [
+      "",
+      "<form><input name=\"attributes\"></form>",
+      "<form><input></form>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: SANITIZE_NAMED_PROPS",
+    "kind": "equal",
+    "payload": "<a id=\"x\"></a>",
+    "config": {
+      "SANITIZE_NAMED_PROPS": true
+    },
+    "expected": "<a id=\"user-content-x\"></a>"
+  },
+  {
+    "name": "Config-Flag tests: SANITIZE_NAMED_PROPS",
+    "kind": "equal",
+    "payload": "<form id=\"x\"><input id=\"y\"></form>",
+    "config": {
+      "SANITIZE_NAMED_PROPS": true
+    },
+    "expected": "<form id=\"user-content-x\"><input id=\"user-content-y\"></form>"
+  },
+  {
+    "name": "Config-Flag tests: SANITIZE_NAMED_PROPS",
+    "kind": "equal",
+    "payload": "<a id=\"x\"></a><a id=\"x\"></a>",
+    "config": {
+      "SANITIZE_NAMED_PROPS": true
+    },
+    "expected": "<a id=\"user-content-x\"></a><a id=\"user-content-x\"></a>"
+  },
+  {
+    "name": "Config-Flag tests: WHOLE_DOCUMENT",
+    "kind": "equal",
+    "payload": "123",
+    "config": {
+      "WHOLE_DOCUMENT": false
+    },
+    "expected": "123"
+  },
+  {
+    "name": "Config-Flag tests: WHOLE_DOCUMENT",
+    "kind": "equal",
+    "payload": "123",
+    "config": {
+      "WHOLE_DOCUMENT": true
+    },
+    "expected": "<html><head></head><body>123</body></html>"
+  },
+  {
+    "name": "Config-Flag tests: WHOLE_DOCUMENT",
+    "kind": "equal",
+    "payload": "<style>*{color:red}</style>",
+    "config": {
+      "WHOLE_DOCUMENT": false
+    },
+    "expected": ""
+  },
+  {
+    "name": "Config-Flag tests: WHOLE_DOCUMENT",
+    "kind": "equal",
+    "payload": "<style>*{color:red}</style>",
+    "config": {
+      "WHOLE_DOCUMENT": true
+    },
+    "expected": "<html><head><style>*{color:red}</style></head><body></body></html>"
+  },
+  {
+    "name": "Config-Flag tests: WHOLE_DOCUMENT",
+    "kind": "equal",
+    "payload": "123<style>*{color:red}</style>",
+    "config": {
+      "WHOLE_DOCUMENT": false
+    },
+    "expected": "123<style>*{color:red}</style>"
+  },
+  {
+    "name": "Config-Flag tests: WHOLE_DOCUMENT",
+    "kind": "equal",
+    "payload": "123<style>*{color:red}</style>",
+    "config": {
+      "WHOLE_DOCUMENT": true
+    },
+    "expected": "<html><head></head><body>123<style>*{color:red}</style></body></html>"
+  },
+  {
+    "name": "Config-Flag tests: WHOLE_DOCUMENT",
+    "kind": "equal",
+    "payload": "<!DOCTYPE html><html><body>123</body></html>",
+    "config": {
+      "WHOLE_DOCUMENT": true
+    },
+    "expected": "<html><head></head><body>123</body></html>"
+  },
+  {
+    "name": "Config-Flag tests: WHOLE_DOCUMENT",
+    "kind": "equal",
+    "payload": "<!DOCTYPE html><html><body>123</body></html>",
+    "config": {
+      "WHOLE_DOCUMENT": true,
+      "ADD_TAGS": [
+        "!doctype"
+      ]
+    },
+    "expected": "<!DOCTYPE html>\n<html><head></head><body>123</body></html>"
+  },
+  {
+    "name": "Config-Flag tests: RETURN_DOM",
+    "kind": "equal",
+    "payload": "<a>123<b>456</b></a>",
+    "config": {
+      "RETURN_DOM": true
+    },
+    "expected": "<body><a>123<b>456</b></a></body>"
+  },
+  {
+    "name": "Config-Flag tests: RETURN_DOM",
+    "kind": "equal",
+    "payload": "<a>123<b>456<script>alert(1)</script></b></a>",
+    "config": {
+      "RETURN_DOM": true
+    },
+    "expected": "<body><a>123<b>456</b></a></body>"
+  },
+  {
+    "name": "Config-Flag tests: RETURN_DOM",
+    "kind": "equal",
+    "payload": "<a>123<b>456</b></a>",
+    "config": {
+      "RETURN_DOM": true,
+      "WHOLE_DOCUMENT": true
+    },
+    "expected": "<html><head></head><body><a>123<b>456</b></a></body></html>"
+  },
+  {
+    "name": "Config-Flag tests: RETURN_DOM",
+    "kind": "equal",
+    "payload": "<a>123<b>456<script>alert(1)</script></b></a>",
+    "config": {
+      "RETURN_DOM": true,
+      "WHOLE_DOCUMENT": true
+    },
+    "expected": "<html><head></head><body><a>123<b>456</b></a></body></html>"
+  },
+  {
+    "name": "Config-Flag tests: RETURN_DOM",
+    "kind": "equal",
+    "payload": "123",
+    "config": {
+      "RETURN_DOM": true
+    },
+    "expected": "<body>123</body>"
+  },
+  {
+    "name": "Config-Flag tests: RETURN_DOM_FRAGMENT",
+    "kind": "equal",
+    "payload": "foo<img id=\"createDocumentFragment\">",
+    "config": {
+      "RETURN_DOM_FRAGMENT": true
+    },
+    "expected": "foo"
+  },
+  {
+    "name": "Config-Flag tests: RETURN_DOM_FRAGMENT",
+    "kind": "equal",
+    "payload": "foo<img id=\"createDocumentFragment\">",
+    "config": {
+      "RETURN_DOM_FRAGMENT": true,
+      "SANITIZE_DOM": false
+    },
+    "expected": "foo"
+  },
+  {
+    "name": "Config-Flag tests: RETURN_DOM_FRAGMENT",
+    "kind": "equal",
+    "payload": "<body><div><template shadowroot=open><img src=x onerror=alert(3)></template></div></body>",
+    "config": {
+      "RETURN_DOM": true
+    },
+    "expected": "<body><div><template><img src=\"x\"></template></div></body>"
+  },
+  {
+    "name": "Config-Flag tests: FORBID_TAGS",
+    "kind": "equal",
+    "payload": "<a>123<b>456</b></a>",
+    "config": {
+      "FORBID_TAGS": [
+        "b"
+      ]
+    },
+    "expected": "<a>123456</a>"
+  },
+  {
+    "name": "Config-Flag tests: FORBID_TAGS",
+    "kind": "equal",
+    "payload": "<a>123<b>456<script>alert(1)</script></b></a>789",
+    "config": {
+      "FORBID_TAGS": [
+        "a",
+        "b"
+      ]
+    },
+    "expected": "123456789"
+  },
+  {
+    "name": "Config-Flag tests: FORBID_TAGS",
+    "kind": "equal",
+    "payload": "<a>123<b>456</b></a>",
+    "config": {
+      "FORBID_TAGS": [
+        "c"
+      ]
+    },
+    "expected": "<a>123<b>456</b></a>"
+  },
+  {
+    "name": "Config-Flag tests: FORBID_TAGS",
+    "kind": "equal",
+    "payload": "<a>123<b>456<script>alert(1)</script></b></a>789",
+    "config": {
+      "FORBID_TAGS": [
+        "script",
+        "b"
+      ]
+    },
+    "expected": "<a>123456</a>789"
+  },
+  {
+    "name": "Config-Flag tests: FORBID_TAGS",
+    "kind": "equal",
+    "payload": "<a>123<b>456</b></a>",
+    "config": {
+      "ADD_TAGS": [
+        "b"
+      ],
+      "FORBID_TAGS": [
+        "b"
+      ]
+    },
+    "expected": "<a>123456</a>"
+  },
+  {
+    "name": "Config-Flag tests: FORBID_ATTR",
+    "kind": "equal",
+    "payload": "<a x=\"1\">123<b>456</b></a>",
+    "config": {
+      "FORBID_ATTR": [
+        "x"
+      ]
+    },
+    "expected": "<a>123<b>456</b></a>"
+  },
+  {
+    "name": "Config-Flag tests: FORBID_ATTR",
+    "kind": "equal",
+    "payload": "<a class=\"0\" x=\"1\">123<b y=\"1\">456<script>alert(1)</script></b></a>789",
+    "config": {
+      "FORBID_ATTR": [
+        "x",
+        "y"
+      ]
+    },
+    "expected": "<a class=\"0\">123<b>456</b></a>789"
+  },
+  {
+    "name": "Config-Flag tests: FORBID_ATTR",
+    "kind": "equal",
+    "payload": "<a y=\"1\">123<b y=\"1\" y=\"2\">456</b></a>",
+    "config": {
+      "FORBID_ATTR": [
+        "y"
+      ]
+    },
+    "expected": "<a>123<b>456</b></a>"
+  },
+  {
+    "name": "Config-Flag tests: FORBID_ATTR",
+    "kind": "equal",
+    "payload": "<a>123<b x=\"1\">456<script y=\"1\">alert(1)</script></b></a>789",
+    "config": {
+      "FORBID_ATTR": [
+        "x",
+        "y"
+      ]
+    },
+    "expected": "<a>123<b>456</b></a>789"
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_ARIA_ATTR",
+    "kind": "contains",
+    "payload": "<a aria-abc=\"foo\" href=\"#\">abc</a>",
+    "config": {
+      "ALLOW_ARIA_ATTR": true
+    },
+    "expected": [
+      "<a aria-abc=\"foo\" href=\"#\">abc</a>",
+      "<a href=\"#\" aria-abc=\"foo\">abc</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_ARIA_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\" aria-aöü=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_ARIA_ATTR": true
+    },
+    "expected": "<a href=\"#\">abc</a>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_ARIA_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\" aria-abc=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_ARIA_ATTR": false
+    },
+    "expected": "<a href=\"#\">abc</a>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOW_ARIA_ATTR",
+    "kind": "equal",
+    "payload": "<a href=\"#\" aria-äöü=\"foo\">abc</a>",
+    "config": {
+      "ALLOW_ARIA_ATTR": false
+    },
+    "expected": "<a href=\"#\">abc</a>"
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "equal",
+    "payload": "<h1>HELLO</h1>",
+    "config": {
+      "USE_PROFILES": {
+        "html": false
+      }
+    },
+    "expected": "HELLO"
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "equal",
+    "payload": "<h1>HELLO</h1>",
+    "config": {
+      "USE_PROFILES": {
+        "html": true
+      }
+    },
+    "expected": "<h1>HELLO</h1>"
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "contains",
+    "payload": "<h1>HELLO</h1><math></math>",
+    "config": {
+      "USE_PROFILES": {
+        "html": true,
+        "mathMl": true
+      }
+    },
+    "expected": [
+      "<h1>HELLO</h1>",
+      "<h1>HELLO</h1><math></math>",
+      "<h1>HELLO</h1><math></math>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "contains",
+    "payload": "<h1>HELLO</h1><math><mi></mi></math>",
+    "config": {
+      "USE_PROFILES": {
+        "html": true,
+        "mathMl": true
+      }
+    },
+    "expected": [
+      "<h1>HELLO</h1>",
+      "<h1>HELLO</h1><math><mi></mi></math>",
+      "<h1>HELLO</h1><math></math>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "contains",
+    "payload": "<h1>HELLO</h1><math><mi></mi></math>",
+    "config": {
+      "USE_PROFILES": {
+        "html": true,
+        "mathMl": true
+      },
+      "FORBID_TAGS": [
+        "mi"
+      ]
+    },
+    "expected": [
+      "<h1>HELLO</h1>",
+      "<h1>HELLO</h1><math></math>",
+      "<h1>HELLO</h1><math></math>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "contains",
+    "payload": "<h1>HELLO</h1><math class=\"foo\"><mi></mi></math>",
+    "config": {
+      "USE_PROFILES": {
+        "html": true,
+        "mathMl": true
+      },
+      "FORBID_ATTR": [
+        "class"
+      ]
+    },
+    "expected": [
+      "<h1>HELLO</h1>",
+      "<h1>HELLO</h1><math><mi></mi></math>",
+      "<h1>HELLO</h1><math></math>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "equal",
+    "payload": "<h1>HELLO</h1>",
+    "config": {
+      "USE_PROFILES": {
+        "bogus": true
+      }
+    },
+    "expected": "HELLO"
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "equal",
+    "payload": "<h1>HELLO</h1>",
+    "config": {
+      "USE_PROFILES": 123
+    },
+    "expected": "HELLO"
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "equal",
+    "payload": "<h1>HELLO</h1>",
+    "config": {
+      "USE_PROFILES": []
+    },
+    "expected": "HELLO"
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "contains",
+    "payload": "<svg><rect height=\"50\"></rect></svg>",
+    "config": {
+      "USE_PROFILES": {
+        "svg": true
+      }
+    },
+    "expected": [
+      "",
+      "<svg><rect height=\"50\"></rect></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect height=\"50\" /></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" />"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "contains",
+    "payload": "<svg><feBlend in=\"SourceGraphic\" mode=\"multiply\" /></svg>",
+    "config": {
+      "USE_PROFILES": {
+        "svgFilters": true
+      },
+      "ADD_TAGS": [
+        "svg"
+      ]
+    },
+    "expected": [
+      "<svg><feblend in=\"SourceGraphic\" mode=\"multiply\"></feblend></svg>",
+      "<svg><feblend in=\"SourceGraphic\" mode=\"multiply\"></feblend></svg>",
+      "<svg><feBlend in=\"SourceGraphic\" mode=\"multiply\"></feBlend></svg>",
+      "<svg><feBlend in=\"SourceGraphic\" mode=\"multiply\"></feBlend></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\"><feBlend in=\"SourceGraphic\" mode=\"multiply\" /></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" />"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "contains",
+    "payload": "<svg><style>.some-class {fill: #fff}</style></svg>",
+    "config": {
+      "USE_PROFILES": {
+        "svg": true
+      }
+    },
+    "expected": [
+      "",
+      "<svg><style>.some-class {fill: #fff}</style></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\"><style>.some-class {fill: #fff}</style></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" />"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "contains",
+    "payload": "<svg><text>SEE ME</text></svg>",
+    "config": {
+      "USE_PROFILES": {
+        "svg": true
+      },
+      "KEEP_CONTENT": false
+    },
+    "expected": [
+      "",
+      "<svg><text>SEE ME</text></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\"><text>SEE ME</text></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" />"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "equal",
+    "payload": "<span>SEE ME</span>",
+    "config": {
+      "USE_PROFILES": {
+        "html": true
+      },
+      "KEEP_CONTENT": false
+    },
+    "expected": "<span>SEE ME</span>"
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "equal",
+    "payload": "<div></div>",
+    "config": {
+      "USE_PROFILES": {
+        "svg": true
+      },
+      "ADD_TAGS": [
+        "div"
+      ]
+    },
+    "expected": "<div></div>"
+  },
+  {
+    "name": "Config-Flag tests: USE_PROFILES",
+    "kind": "contains",
+    "payload": "<svg keep=\"me\"></svg>",
+    "config": {
+      "USE_PROFILES": {
+        "svg": true
+      },
+      "ADD_ATTR": [
+        "keep"
+      ]
+    },
+    "expected": [
+      "",
+      "<svg keep=\"me\"></svg>",
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" keep=\"me\" />"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: ALLOWED_URI_REGEXP",
+    "kind": "equal",
+    "payload": "<img src=\"https://i.imgur.com/hkfpOUu.gifv\">",
+    "config": {
+      "ALLOWED_URI_REGEXP": {
+        "__type": "RegExp",
+        "source": "^(?:(?:(?:f|ht)tps?):|[^a-z]|[a-z+.\\-]+(?:[^a-z+.\\-:]|$))",
+        "flags": "i"
+      }
+    },
+    "expected": "<img src=\"https://i.imgur.com/hkfpOUu.gifv\">"
+  },
+  {
+    "name": "Config-Flag tests: ALLOWED_URI_REGEXP",
+    "kind": "equal",
+    "payload": "<img src=\"http://i.imgur.com/WScAnHr.jpg\">",
+    "config": {
+      "ALLOWED_URI_REGEXP": {
+        "__type": "RegExp",
+        "source": "^(?:(?:(?:f|ht)tps?):|[^a-z]|[a-z+.\\-]+(?:[^a-z+.\\-:]|$))",
+        "flags": "i"
+      }
+    },
+    "expected": "<img src=\"http://i.imgur.com/WScAnHr.jpg\">"
+  },
+  {
+    "name": "Config-Flag tests: ALLOWED_URI_REGEXP",
+    "kind": "equal",
+    "payload": "<img src=\"blob:https://localhost:3000/c4ea3ec6-9f22-4d08-af6f-d79e78a0a7a7\">",
+    "config": {
+      "ALLOWED_URI_REGEXP": {
+        "__type": "RegExp",
+        "source": "^(?:(?:(?:f|ht)tps?):|[^a-z]|[a-z+.\\-]+(?:[^a-z+.\\-:]|$))",
+        "flags": "i"
+      }
+    },
+    "expected": "<img>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOWED_URI_REGEXP",
+    "kind": "equal",
+    "payload": "<a href=\"mailto:demo@example.com\">demo</a>",
+    "config": {
+      "ALLOWED_URI_REGEXP": {
+        "__type": "RegExp",
+        "source": "^(?:(?:(?:f|ht)tps?):|[^a-z]|[a-z+.\\-]+(?:[^a-z+.\\-:]|$))",
+        "flags": "i"
+      }
+    },
+    "expected": "<a>demo</a>"
+  },
+  {
+    "name": "Config-Flag tests: NAMESPACE",
+    "kind": "contains",
+    "payload": "<polyline points=\"0 0\"></polyline>",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/2000/svg"
+    },
+    "expected": [
+      "<polyline points=\"0 0\"></polyline>",
+      "<polyline xmlns=\"http://www.w3.org/2000/svg\" points=\"0 0\"/>",
+      "<polyline xmlns=\"http://www.w3.org/2000/svg\" points=\"0,0\" />",
+      ""
+    ]
+  },
+  {
+    "name": "Config-Flag tests: NAMESPACE",
+    "kind": "contains",
+    "payload": "<polyline points=\"0 0\"></polyline>",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/1999/xhtml"
+    },
+    "expected": [
+      ""
+    ]
+  },
+  {
+    "name": "Config-Flag tests: NAMESPACE",
+    "kind": "contains",
+    "payload": "<mi></mi>",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/1998/Math/MathML"
+    },
+    "expected": [
+      "<mi></mi>",
+      "<mi xmlns=\"http://www.w3.org/1998/Math/MathML\"></mi>",
+      "<mi xmlns=\"http://www.w3.org/1998/Math/MathML\"/>",
+      "<mi xmlns=\"http://www.w3.org/1998/Math/MathML\" />",
+      ""
+    ]
+  },
+  {
+    "name": "Config-Flag tests: NAMESPACE",
+    "kind": "contains",
+    "payload": "<polyline points=\"0 0\"></polyline>",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/1998/Math/MathML"
+    },
+    "expected": [
+      ""
+    ]
+  },
+  {
+    "name": "Config-Flag tests: NAMESPACE",
+    "kind": "contains",
+    "payload": "<mi></mi>",
+    "config": {
+      "NAMESPACE": "http://www.w3.org/1999/xhtml"
+    },
+    "expected": [
+      ""
+    ]
+  },
+  {
+    "name": "Config-Flag tests: ALLOWED_NAMESPACES",
+    "kind": "contains",
+    "payload": "<library xmlns=\"http://www.ibm.com/library\"><name>Library 1</name></library>",
+    "config": {
+      "ALLOWED_TAGS": [
+        "#text",
+        "library",
+        "name"
+      ],
+      "KEEP_CONTENT": false,
+      "PARSER_MEDIA_TYPE": "application/xhtml+xml"
+    },
+    "expected": ""
+  },
+  {
+    "name": "Config-Flag tests: ALLOWED_NAMESPACES",
+    "kind": "contains",
+    "payload": "<library xmlns=\"http://www.ibm.com/library\"><name>Library 1</name><dirty onload=\"alert()\" /></library>",
+    "config": {
+      "ALLOWED_NAMESPACES": [
+        "http://www.ibm.com/library"
+      ],
+      "ALLOWED_TAGS": [
+        "#text",
+        "library",
+        "name"
+      ],
+      "KEEP_CONTENT": false,
+      "PARSER_MEDIA_TYPE": "application/xhtml+xml"
+    },
+    "expected": "<library xmlns=\"http://www.ibm.com/library\"><name>Library 1</name></library>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOWED_NAMESPACES",
+    "kind": "contains",
+    "payload": "<city><library xmlns=\"http://www.ibm.com/library\"><name>Library 1</name><dirty onload=\"alert()\" /></library></city>",
+    "config": {
+      "ALLOWED_NAMESPACES": [
+        "http://www.w3.org/1999/xhtml",
+        "http://www.ibm.com/library"
+      ],
+      "ALLOWED_TAGS": [
+        "#text",
+        "city",
+        "library",
+        "name"
+      ],
+      "KEEP_CONTENT": false,
+      "PARSER_MEDIA_TYPE": "application/xhtml+xml"
+    },
+    "expected": "<city xmlns=\"http://www.w3.org/1999/xhtml\"><library xmlns=\"http://www.ibm.com/library\"><name>Library 1</name></library></city>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOWED_NAMESPACES",
+    "kind": "contains",
+    "payload": "<library xmlns=\"http://www.ibm.com/library\" xmlns:bk=\"urn:loc.gov:books\"><bk:name>Library 1</bk:name><dirty onload=\"alert()\" /></library>",
+    "config": {
+      "ALLOWED_NAMESPACES": [
+        "http://www.ibm.com/library"
+      ],
+      "ALLOWED_TAGS": [
+        "library",
+        "bk:name"
+      ],
+      "KEEP_CONTENT": false,
+      "PARSER_MEDIA_TYPE": "application/xhtml+xml"
+    },
+    "expected": [
+      "<library xmlns=\"http://www.ibm.com/library\"/>",
+      "<library xmlns=\"http://www.ibm.com/library\" />"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: ALLOWED_NAMESPACES",
+    "kind": "contains",
+    "payload": "<library xmlns=\"http://www.ibm.com/library\" xmlns:bk=\"urn:loc.gov:books\" xmlns:m=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\"><bk:name>Library 1<m:properties>Other Properties</m:properties></bk:name><dirty onload=\"alert()\" /></library>",
+    "config": {
+      "ALLOWED_NAMESPACES": [
+        "http://www.ibm.com/library",
+        "urn:loc.gov:books",
+        "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+      ],
+      "ALLOWED_TAGS": [
+        "#text",
+        "library",
+        "bk:name",
+        "m:properties"
+      ],
+      "KEEP_CONTENT": false,
+      "PARSER_MEDIA_TYPE": "application/xhtml+xml"
+    },
+    "expected": "<library xmlns=\"http://www.ibm.com/library\"><bk:name xmlns:bk=\"urn:loc.gov:books\">Library 1<m:properties xmlns:m=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\">Other Properties</m:properties></bk:name></library>"
+  },
+  {
+    "name": "Config-Flag tests: ALLOWED_NAMESPACES",
+    "kind": "contains",
+    "payload": "<library xmlns=\"http://www.ibm.com/library\" xmlns:bk=\"urn:loc.gov:books\" xmlns:m=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\"><bk:name>Library 1<m:properties>Other Properties</m:properties></bk:name><dirty onload=\"alert()\" /></library>",
+    "config": {
+      "ADD_TAGS": [
+        "library",
+        "bk:name"
+      ],
+      "ALLOWED_NAMESPACES": [
+        "http://www.ibm.com/library",
+        "urn:loc.gov:books",
+        "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+      ],
+      "FORBID_TAGS": [
+        "m:properties"
+      ],
+      "KEEP_CONTENT": false,
+      "PARSER_MEDIA_TYPE": "application/xhtml+xml"
+    },
+    "expected": "<library xmlns=\"http://www.ibm.com/library\"><bk:name xmlns:bk=\"urn:loc.gov:books\">Library 1</bk:name></library>"
+  },
+  {
+    "name": "Config-Flag tests: PARSER_MEDIA_TYPE",
+    "kind": "contains",
+    "payload": "<A href=\"#\">invalid</A><a TITLE=\"title\" href=\"#\">valid</a>",
+    "config": {
+      "PARSER_MEDIA_TYPE": ""
+    },
+    "expected": [
+      "<a href=\"#\">invalid</a><a href=\"#\" title=\"title\">valid</a>",
+      "<a href=\"#\">invalid</a><a title=\"title\" href=\"#\">valid</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: PARSER_MEDIA_TYPE",
+    "kind": "contains",
+    "payload": "<A href=\"#\">invalid</A><a TITLE=\"title\" href=\"#\">valid</a>",
+    "config": {
+      "PARSER_MEDIA_TYPE": "Application/xhtml+xml"
+    },
+    "expected": [
+      "<a href=\"#\">invalid</a><a href=\"#\" title=\"title\">valid</a>",
+      "<a href=\"#\">invalid</a><a title=\"title\" href=\"#\">valid</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: PARSER_MEDIA_TYPE",
+    "kind": "contains",
+    "payload": "<A href=\"#\">invalid</A><a TITLE=\"title\" href=\"#\">valid</a>",
+    "config": {
+      "PARSER_MEDIA_TYPE": "application/xml"
+    },
+    "expected": [
+      "<a href=\"#\">invalid</a><a href=\"#\" title=\"title\">valid</a>",
+      "<a href=\"#\">invalid</a><a title=\"title\" href=\"#\">valid</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: PARSER_MEDIA_TYPE",
+    "kind": "contains",
+    "payload": "<A href=\"#\">invalid</A><a TITLE=\"title\" href=\"#\">valid</a>",
+    "config": {
+      "PARSER_MEDIA_TYPE": "application/xhtml+xml"
+    },
+    "expected": [
+      "<a href=\"#\">invalid</a><a href=\"#\" title=\"title\">valid</a>",
+      "invalid<a xmlns=\"http://www.w3.org/1999/xhtml\" href=\"#\">valid</a>",
+      "invalid<a xmlns=\"http://www.w3.org/1999/xhtml\" href=\"#\" TITLE=\"title\">valid</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: PARSER_MEDIA_TYPE",
+    "kind": "contains",
+    "payload": "<A href=\"#\">invalid</A><a TITLE=\"title\" href=\"#\">valid</a>",
+    "config": {
+      "PARSER_MEDIA_TYPE": "text/html"
+    },
+    "expected": [
+      "<a href=\"#\">invalid</a><a href=\"#\" title=\"title\">valid</a>",
+      "<a href=\"#\">invalid</a><a title=\"title\" href=\"#\">valid</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: PARSER_MEDIA_TYPE",
+    "kind": "contains",
+    "payload": "<A href=\"#\">invalid</A><a TITLE=\"title\" href=\"#\">valid</a>",
+    "config": {
+      "PARSER_MEDIA_TYPE": "text/xml"
+    },
+    "expected": [
+      "<a href=\"#\">invalid</a><a href=\"#\" title=\"title\">valid</a>",
+      "<a href=\"#\">invalid</a><a title=\"title\" href=\"#\">valid</a>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: PARSER_MEDIA_TYPE",
+    "kind": "contains",
+    "payload": "<A href=\"#\">invalid</A><a TITLE=\"title\" href=\"#\">valid</a>",
+    "config": {
+      "WHOLE_DOCUMENT": true,
+      "PARSER_MEDIA_TYPE": "text/html"
+    },
+    "expected": [
+      "<html><head></head><body><a href=\"#\">invalid</a><a href=\"#\" title=\"title\">valid</a></body></html>",
+      "<html><head></head><body><a href=\"#\">invalid</a><a title=\"title\" href=\"#\">valid</a></body></html>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: PARSER_MEDIA_TYPE",
+    "kind": "contains",
+    "payload": "<A href=\"#\">invalid</A><a TITLE=\"title\" href=\"#\">valid</a>",
+    "config": {
+      "WHOLE_DOCUMENT": true,
+      "PARSER_MEDIA_TYPE": "application/xhtml+xml"
+    },
+    "expected": [
+      "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>invalid<a href=\"#\">valid</a></body></html>",
+      "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head /><body>invalid<a href=\"#\">valid</a></body></html>",
+      "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>invalid<a href=\"#\" TITLE=\"title\">valid</a></body></html>"
+    ]
+  },
+  {
+    "name": "Config-Flag tests: PARSER_MEDIA_TYPE + ALLOWED_TAGS/ALLOWED_ATTR",
+    "kind": "contains",
+    "payload": "<a href=\"#\">abc</a><CustomTag customattr=\"bar\" CustomAttr=\"foo\"/>",
+    "config": {
+      "PARSER_MEDIA_TYPE": "application/xhtml+xml",
+      "ALLOWED_TAGS": [
+        "a",
+        "CustomTag"
+      ],
+      "ALLOWED_ATTR": [
+        "href",
+        "CustomAttr"
+      ]
+    },
+    "expected": [
+      "<a xmlns=\"http://www.w3.org/1999/xhtml\" href=\"#\">abc</a><CustomTag xmlns=\"http://www.w3.org/1999/xhtml\" CustomAttr=\"foo\"></CustomTag>",
+      "<a xmlns=\"http://www.w3.org/1999/xhtml\" href=\"#\">abc</a><CustomTag xmlns=\"http://www.w3.org/1999/xhtml\" CustomAttr=\"foo\" customattr=\"foo\"></CustomTag>"
+    ]
+  }
+]
