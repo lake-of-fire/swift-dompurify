@@ -6,8 +6,8 @@ import PackageDescription
 let package = Package(
     name: "SwiftDOMPurify",
     platforms: [
-        .macOS(.v13),
-        .iOS(.v16),
+        .macOS(.v15),
+        .iOS(.v15),
         .tvOS(.v16),
         .watchOS(.v9),
     ],
