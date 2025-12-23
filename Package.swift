@@ -23,7 +23,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/lake-of-fire/SwiftSoup.git", revision: "ab66a24562765e06f8079fbced0e7b09aaa7a3f3"),
+        .package(path: "../SwiftSoup"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
