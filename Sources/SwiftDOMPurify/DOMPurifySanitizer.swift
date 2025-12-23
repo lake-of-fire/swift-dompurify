@@ -73,6 +73,7 @@ final class DOMPurifySanitizer {
     pattern: #"</no(script|embed|frames)"#,
     options: [.caseInsensitive]
   )
+  private static let documentNodeNameUTF8 = "#document".utf8Array
   private static let mustacheTemplateRegex = try! NSRegularExpression(
     // DOMPurify MUSTACHE_EXPR: /\{\{[\w\W]*|[\w\W]*\}\}/gm
     pattern: #"\{\{.*|.*\}\}"#,
@@ -463,6 +464,27 @@ final class DOMPurifySanitizer {
     case missingBody
   }
 
+  private func findBodyNode(inDocumentNode node: Node) -> Element? {
+    let children = node.getChildNodes()
+    for child in children {
+      if let el = child as? Element {
+        let tagName = tagNameLowerBytes(el)
+        if tagName == UTF8Arrays.body {
+          return el
+        }
+        if tagName == UTF8Arrays.html {
+          for grandchild in el.getChildNodes() {
+            if let body = grandchild as? Element,
+               tagNameLowerBytes(body) == UTF8Arrays.body {
+              return body
+            }
+          }
+        }
+      }
+    }
+    return nil
+  }
+
   private func sanitizeElementInputToBody(_ element: Element) throws -> Element {
     return try sanitizeNodeInputToBody(element)
   }
@@ -480,7 +502,8 @@ final class DOMPurifySanitizer {
     }
 
     let sourceNode: Node
-    if let document = node as? Document, let documentBody = document.body() {
+    if node.nodeNameUTF8() == Self.documentNodeNameUTF8,
+       let documentBody = findBodyNode(inDocumentNode: node) {
       sourceNode = documentBody
     } else {
       sourceNode = node
