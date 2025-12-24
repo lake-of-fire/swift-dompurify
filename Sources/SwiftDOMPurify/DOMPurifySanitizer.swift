@@ -7,6 +7,16 @@ final class DOMPurifySanitizer {
     let innerHTML: String
   }
 
+  private struct AttributeMutation {
+    let keep: Bool
+    let newValue: [UInt8]?
+
+    init(keep: Bool, newValue: [UInt8]? = nil) {
+      self.keep = keep
+      self.newValue = newValue
+    }
+  }
+
   private enum Namespace: Hashable {
     case html
     case svg
@@ -1590,7 +1600,8 @@ final class DOMPurifySanitizer {
       && !config.safeForTemplates
       && !config.safeForXML
       && !config.sanitizeNamedProps
-    attrs.compactAndMutate { attr in
+    let attributes = attrs.asList()
+    for attr in attributes {
       let originalNameBytes = attr.getKeyUTF8()
       let nameBytes = isXHTML ? originalNameBytes : DOMPurifyUTF8Util.lowercasedUnicode(originalNameBytes)
       let lowerNameBytesForIsCheck = isXHTML ? DOMPurifyUTF8Util.lowercasedUnicode(originalNameBytes) : nameBytes
@@ -1647,6 +1658,7 @@ final class DOMPurifySanitizer {
         return AttributeMutation(keep: false)
       }
 
+      let mutation: AttributeMutation
       if useFastPath {
         var trimmedValueBytes: [UInt8]?
         @inline(__always)
@@ -1672,15 +1684,11 @@ final class DOMPurifySanitizer {
         let valueBytesForChecks = valueBytesFast()
         if nameBytes == DOMPurifyUTF8Missing.attributename,
            DOMPurifyUTF8Util.containsASCII(lowercasedNeedle: DOMPurifyUTF8Missing.href, in: valueBytesForChecks) {
-          return scheduleRemoveAttribute()
-        }
-
-        if !config.allowSelfCloseInAttributes,
-           DOMPurifyUTF8Util.containsASCII(lowercasedNeedle: DOMPurifyUTF8Missing.selfClose, in: valueBytesForChecks) {
-          return scheduleRemoveAttribute()
-        }
-
-        if !isValidAttribute(
+          mutation = scheduleRemoveAttribute()
+        } else if !config.allowSelfCloseInAttributes,
+                  DOMPurifyUTF8Util.containsASCII(lowercasedNeedle: DOMPurifyUTF8Missing.selfClose, in: valueBytesForChecks) {
+          mutation = scheduleRemoveAttribute()
+        } else if !isValidAttribute(
           lcTagBytes: tagNameBytes,
           lcTagString: tagNameString,
           lcNameBytes: nameBytes,
@@ -1688,78 +1696,88 @@ final class DOMPurifySanitizer {
           valueBytes: valueBytesForChecks,
           valueString: valueStringFast
         ) {
-          return scheduleRemoveAttribute()
+          mutation = scheduleRemoveAttribute()
+        } else {
+          let finalValueBytes = valueBytesFast()
+          let newValueBytes = finalValueBytes == originalValueBytes ? nil : finalValueBytes
+          mutation = AttributeMutation(keep: true, newValue: newValueBytes)
+        }
+      } else {
+        var forcedMutation: AttributeMutation?
+        if hasUponSanitizeAttribute, let allowedAttributesProxy {
+          let hookEvent = DOMPurify.HookEvent(
+            tagName: nil,
+            allowedTags: nil,
+            attrName: nameString(),
+            attrValue: valueString(),
+            allowedAttributes: allowedAttributesProxy,
+            keepAttr: true,
+            forceKeepAttr: nil
+          )
+          executeHooks(.uponSanitizeAttribute, node: element, event: hookEvent)
+          if let updated = hookEvent.attrValue {
+            updateValueString(updated)
+          }
+          if hookEvent.forceKeepAttr == true {
+            forcedMutation = AttributeMutation(keep: true)
+          } else if hookEvent.keepAttr == false {
+            forcedMutation = scheduleRemoveAttribute()
+          }
         }
 
-        let finalValueBytes = valueBytesFast()
-        let newValueBytes = finalValueBytes == originalValueBytes ? nil : finalValueBytes
-        return AttributeMutation(keep: true, newValue: newValueBytes)
-      }
+        if let forcedMutation {
+          mutation = forcedMutation
+        } else {
+          if config.sanitizeNamedProps && (nameBytes == DOMPurifyUTF8Missing.id || nameBytes == UTF8Arrays.name) {
+            let originalName = cachedName ?? String(decoding: originalNameBytes, as: UTF8.self)
+            cachedName = originalName
+            recordRemovedAttribute(name: originalName, from: element)
+            updateValueString("user-content-" + valueString())
+          }
 
-      if hasUponSanitizeAttribute, let allowedAttributesProxy {
-        let hookEvent = DOMPurify.HookEvent(
-          tagName: nil,
-          allowedTags: nil,
-          attrName: nameString(),
-          attrValue: valueString(),
-          allowedAttributes: allowedAttributesProxy,
-          keepAttr: true,
-          forceKeepAttr: nil
-        )
-        executeHooks(.uponSanitizeAttribute, node: element, event: hookEvent)
-        if let updated = hookEvent.attrValue {
-          updateValueString(updated)
+          let valueBytesForChecks = valueBytes()
+          if nameBytes == DOMPurifyUTF8Missing.attributename,
+             DOMPurifyUTF8Util.containsASCII(lowercasedNeedle: DOMPurifyUTF8Missing.href, in: valueBytesForChecks) {
+            mutation = scheduleRemoveAttribute()
+          } else if !config.allowSelfCloseInAttributes,
+                    DOMPurifyUTF8Util.containsASCII(lowercasedNeedle: DOMPurifyUTF8Missing.selfClose, in: valueBytesForChecks) {
+            mutation = scheduleRemoveAttribute()
+          } else {
+            let value = valueString()
+            if config.safeForXML,
+               Self.unsafeAttributeValueRegex.firstMatch(in: value, options: [], range: NSRange(value.startIndex..., in: value)) != nil {
+              mutation = scheduleRemoveAttribute()
+            } else {
+              if config.safeForTemplates {
+                updateValueString(sanitizeTemplateExpressions(value))
+              }
+
+              if !isValidAttribute(
+                lcTagBytes: tagNameBytes,
+                lcTagString: tagNameString,
+                lcNameBytes: nameBytes,
+                lcNameString: nameString,
+                valueBytes: valueBytes(),
+                valueString: valueString
+              ) {
+                mutation = scheduleRemoveAttribute()
+              } else {
+                let finalValueBytes = valueBytes()
+                let newValueBytes = finalValueBytes == originalValueBytes ? nil : finalValueBytes
+                mutation = AttributeMutation(keep: true, newValue: newValueBytes)
+              }
+            }
+          }
         }
-        if hookEvent.forceKeepAttr == true {
-          return AttributeMutation(keep: true)
+      }
+
+      if mutation.keep {
+        if let newValueBytes = mutation.newValue {
+          _ = try? element.attr(originalNameBytes, newValueBytes)
         }
-        if hookEvent.keepAttr == false {
-          return scheduleRemoveAttribute()
-        }
+      } else {
+        _ = try? element.removeAttr(originalNameBytes)
       }
-
-      if config.sanitizeNamedProps && (nameBytes == DOMPurifyUTF8Missing.id || nameBytes == UTF8Arrays.name) {
-        let originalName = cachedName ?? String(decoding: originalNameBytes, as: UTF8.self)
-        cachedName = originalName
-        recordRemovedAttribute(name: originalName, from: element)
-        updateValueString("user-content-" + valueString())
-      }
-
-      let valueBytesForChecks = valueBytes()
-      if nameBytes == DOMPurifyUTF8Missing.attributename,
-         DOMPurifyUTF8Util.containsASCII(lowercasedNeedle: DOMPurifyUTF8Missing.href, in: valueBytesForChecks) {
-        return scheduleRemoveAttribute()
-      }
-
-      if !config.allowSelfCloseInAttributes,
-         DOMPurifyUTF8Util.containsASCII(lowercasedNeedle: DOMPurifyUTF8Missing.selfClose, in: valueBytesForChecks) {
-        return scheduleRemoveAttribute()
-      }
-
-      let value = valueString()
-      if config.safeForXML,
-         Self.unsafeAttributeValueRegex.firstMatch(in: value, options: [], range: NSRange(value.startIndex..., in: value)) != nil {
-        return scheduleRemoveAttribute()
-      }
-
-      if config.safeForTemplates {
-        updateValueString(sanitizeTemplateExpressions(value))
-      }
-
-      if !isValidAttribute(
-        lcTagBytes: tagNameBytes,
-        lcTagString: tagNameString,
-        lcNameBytes: nameBytes,
-        lcNameString: nameString,
-        valueBytes: valueBytes(),
-        valueString: valueString
-      ) {
-        return scheduleRemoveAttribute()
-      }
-
-      let finalValueBytes = valueBytes()
-      let newValueBytes = finalValueBytes == originalValueBytes ? nil : finalValueBytes
-      return AttributeMutation(keep: true, newValue: newValueBytes)
     }
 
     if !isRemovalNames.isEmpty {
