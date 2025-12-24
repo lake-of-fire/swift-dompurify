@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SwiftDOMPurify",
     platforms: [
-        .macOS(.v15),
+        .macOS(.v13),
         .iOS(.v15),
         .tvOS(.v16),
         .watchOS(.v9),
@@ -23,7 +23,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.6.0"),
+        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.11.3"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
